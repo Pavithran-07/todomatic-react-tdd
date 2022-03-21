@@ -1,23 +1,60 @@
-import logo from './logo.svg';
+import Form from './components/Form';
 import './App.css';
+import {useState, useEffect} from 'react';
+import TodoList from './components/TodoList';
+
 
 function App() {
+
+  const [todos, setTodos] = useState([]);
+
+      // Fetching the data from local storage whenever the app loads
+  useEffect(() =>{
+    getLocalTodos();
+    console.log("Using Get");
+  },[]);
+
+  // Saving the data to local storage whenever the data changes
+  useEffect(() => {
+    saveLocalTodos();
+  }, [todos]);
+
+  const saveLocalTodos = () =>{
+    console.log("Saving", todos);
+    localStorage.setItem('todos',JSON.stringify(todos))
+  }
+
+  const getLocalTodos = () =>{
+    console.log("Get ", todos)
+    if(localStorage.getItem('todos') === null){
+      localStorage.setItem('todos',JSON.stringify([]));
+    }
+    else{
+      let todoLocal= JSON.parse(localStorage.getItem('todos'))
+      setTodos(todoLocal)
+      console.log(todos);
+    }
+  }
+
+
+  function addTodo(task){
+    console.log(task);
+    setTodos([...todos, {
+      id: Math.random(),
+      name: task,
+      completed: false
+    }]);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='card'>
+        <div className='container'>
+          <Form addTodo={addTodo}/>
+          <TodoList todos={todos}
+          setTodos={setTodos}/>
+        </div>
+      </div>
     </div>
   );
 }
